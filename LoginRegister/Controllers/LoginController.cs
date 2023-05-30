@@ -8,14 +8,42 @@ namespace LoginRegister.Controllers
     {
         private readonly UserDbContext _database;
 
+        public int _isactive { get; set; }
+
         public LoginController(UserDbContext database)
         {
             _database = database;
+            _isactive = 0;
         }
 
+        private void LoginUser() {
+            _isactive = 1;
+        }
+
+        private void LogoutUser() {
+            _isactive = 0;
+        }
+
+        public bool InSession() {
+            if (_isactive != 0)
+            {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+        // Get Request
         public IActionResult Index()
         {
-            return View();
+            if (_isactive != 0)
+            {
+                return RedirectToAction("Welcome", "Login");
+            }
+            else { 
+                return RedirectToAction("Login", "Login");
+            }
         }
 
         public IActionResult Register()
@@ -23,6 +51,16 @@ namespace LoginRegister.Controllers
             return View();
         }
 
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        public IActionResult Welcome() {
+            return View();
+        }
+
+        // Post Request
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Register(UserModel model)
@@ -39,11 +77,6 @@ namespace LoginRegister.Controllers
             return View(model);
         }
 
-        public IActionResult Login()
-        {
-            return View();
-        }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Login(UserModel model)
@@ -52,7 +85,12 @@ namespace LoginRegister.Controllers
 
             if (temp != null && temp.Email == model.Email && temp.Password == model.Password)
             {
-                return RedirectToAction("Index", "Home");
+                _isactive = 1;
+                bool t = InSession();
+
+                if (t == true) {
+                    return RedirectToAction("Index", "Login"); }
+                return View();
             }
 
             return View();
