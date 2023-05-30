@@ -10,7 +10,8 @@
         </div>
         <div class="mb-3">
             <label asp-for="FirstName"></label>
-            <input asp-for="FirstName" class="form-control"></input>
+            <input asp-for="FirstName" class="form-control" />
+            <span asp-validation-for="FirstName" class="text-danger"/>
         </div>
         <div class="mb-3">
             <label asp-for="LastName"></label>
@@ -25,6 +26,7 @@
         <div class="mb-3">
             <label asp-for="Email"></label>
             <input type="email" asp-for="Email" class="form-control"></input>
+            <span asp-validation-for="Email" class="text-danger" />
         </div>
 
         <div class="mb-3">

@@ -1,0 +1,24 @@
+﻿@model UserModel
+
+<form method="post">
+
+    <div class="border p-3 wt-4">
+        <div class="row pb-2">
+            <h2 class="text-primary">Login</h2>
+        
+        <hr/>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Email"></label>
+            <input type="email" asp-for="Email" class="form-control"></input>
+            <span asp-validation-for="Email" class="text-danger" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Password"></label>
+            <input type="password" asp-for="Password" class="form-control"></input>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:150px">Register</button>
+
+    </div>    
+</form>

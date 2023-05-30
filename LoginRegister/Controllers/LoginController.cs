@@ -17,6 +17,7 @@ namespace LoginRegister.Controllers
         {
             return View();
         }
+
         public IActionResult Register()
         {
             return View();
@@ -26,12 +27,36 @@ namespace LoginRegister.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Register(UserModel model)
         {
-            _database.LoginDetail.Add(model);
-            _database.SaveChanges();
+            if (ModelState.IsValid && _database.LoginDetail.Find(model.Email) == null)
+            {
+                _database.LoginDetail.Add(model);
+                _database.SaveChanges();
 
 
 
-            return RedirectToAction("Index", "Home");
+                return RedirectToAction("login", "Login");
+            }
+            return View(model);
+        }
+
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Login(UserModel model)
+        {
+            UserModel temp = _database.LoginDetail.Find(model.Email);
+
+            if (temp != null && temp.Email == model.Email && temp.Password == model.Password)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View();
         }
     }
 }
+
