@@ -16,9 +16,11 @@
         <div class="mb-3">
             <label asp-for="LastName"></label>
             <input asp-for="LastName" class="form-control"></input>
+            <span asp-validation-for="LastName" class="text-danger" />
         </div>
-            <input type="radio" asp-for="Gender" value="Male" ></input>
+        <input type="radio" asp-for="Gender" value="Male" checked></input>
             <label asp-for="Gender" placeholder="Male" name="Male">Male</label>
+        
 
             <input type="radio" asp-for="Gender" value="Female" ></input>
             <label asp-for="Gender" placeholder="Female" name="Female">Female</label>
@@ -32,21 +34,25 @@
         <div class="mb-3">
             <label asp-for="Password"></label>
             <input type="password" asp-for="Password" class="form-control"></input>
+            <span asp-validation-for="Password" class="text-danger" />
         </div>
 
         <div class="mb-3">
             <label asp-for="City"></label>
             <input asp-for="City" class="form-control"></input>
+            <span asp-validation-for="City" class="text-danger" />
         </div>
 
         <div class="mb-3">
             <label asp-for="State"></label>
             <input asp-for="State" class="form-control"></input>
+            <span asp-validation-for="State" class="text-danger" />
         </div>
 
         <div class="mb-3">
             <label asp-for="ZipCode"></label>
             <input type="tel" maxlength="6" asp-for="ZipCode" class="form-control"></input>
+            <span asp-validation-for="ZipCode" class="text-danger" />
         </div>
 
         <label asp-for="Country"></label>
@@ -152,7 +158,7 @@
             <option value="Hong Kong">Hong Kong</option>
             <option value="Hungary">Hungary</option>
             <option value="Iceland">Iceland</option>
-            <option value="India">India</option>
+            <option value="India" selected>India</option>
             <option value="Indonesia">Indonesia</option>
             <option value="Iran">Iran (Islamic Republic of)</option>
             <option value="Iraq">Iraq</option>
@@ -302,3 +308,7 @@
     </div>
 
 </form>
+
+            @section Scripts{
+                <partial name="_ValidationScriptsPartial" />
+            }

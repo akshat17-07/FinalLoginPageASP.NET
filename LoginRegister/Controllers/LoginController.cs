@@ -50,6 +50,7 @@ namespace LoginRegister.Controllers
 
         public IActionResult Login()
         {
+            TempData["errorMessage"] = "";
             if (User.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Welcome", "Login");

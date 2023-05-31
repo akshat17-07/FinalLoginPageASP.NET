@@ -8,6 +8,7 @@
         
         <hr/>
         </div>
+        <span class="text-danger">@TempData["errorMessage"]</span>
         <div class="mb-3">
             <label asp-for="Email"></label>
             <input type="email" asp-for="Email" class="form-control"></input>
@@ -17,8 +18,12 @@
         <div class="mb-3">
             <label asp-for="Password"></label>
             <input type="password" asp-for="Password" class="form-control"></input>
+            <span asp-validation-for="Password" class="text-danger" />
         </div>
         <button type="submit" class="btn btn-primary" style="width:150px">Register</button>
 
     </div>    
 </form>
+@section Scripts{
+                <partial name="_ValidationScriptsPartial" />
+            }
