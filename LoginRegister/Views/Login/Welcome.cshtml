@@ -19,6 +19,9 @@
                 Email
             </th>
             <th>
+                Password
+            </th>
+            <th>
                 City
             </th>
             <th>
@@ -32,6 +35,12 @@
             </th>
             <th>
                 Interest
+            </th>
+            <th>
+                Forget Password
+            </th>
+            <th>
+                Delete
             </th>
         </tr>
     </thead>
@@ -52,6 +61,9 @@
                     @m.Email
                 </td>
                 <td>
+                    @m.Password
+                </td>
+                <td>
                     @m.City
                 </td>
                 <td>
@@ -65,6 +77,12 @@
                 </td>
                 <td>
                     @m.Interest
+                </td>
+                <td>
+                    <a class="btn btn-sm btn-outline-primary" asp-controller="Login" asp-action="ForgetPassword" asp-route-email="@m.Email">Forget Password</a>
+                </td>
+                <td>
+                    <a class="btn btn-sm btn-danger" asp-controller="Login" asp-action="Delete" asp-route-email="@m.Email">Delete</a>
                 </td>
          </tr>   
         }

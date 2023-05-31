@@ -24,7 +24,7 @@ namespace LoginRegister.Controllers
             {
                 return RedirectToAction("Welcome", "Login");
             }
-            else { 
+            else {
                 return RedirectToAction("Login", "Login");
             }
         }
@@ -60,8 +60,31 @@ namespace LoginRegister.Controllers
 
         [Authorize]
         public IActionResult Welcome() {
-            
+
             return View(_database.LoginDetail.ToList());
+        }
+
+        [Authorize]
+        public IActionResult ForgetPassword(string email) {
+            var model = _database.LoginDetail.FirstOrDefault(u => u.Email == email);
+            if (!ModelState.IsValid)
+            {
+                return NotFound();
+            }
+            return View(model);
+
+        }
+
+        [Authorize]
+        public IActionResult Delete(string email)
+        {
+            var model = _database.LoginDetail.FirstOrDefault(u => u.Email == email);
+            if (!ModelState.IsValid)
+            {
+                return NotFound();
+            }
+            return View(model);
+
         }
 
         // Post Request
@@ -91,19 +114,50 @@ namespace LoginRegister.Controllers
             {
                 var identity = new ClaimsIdentity(new[] {new Claim(
                     ClaimTypes.Name, temp.FirstName) }, CookieAuthenticationDefaults.AuthenticationScheme);
-                
+
                 var principal = new ClaimsPrincipal(identity);
 
                 HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
                 HttpContext.Session.SetString("Username", temp.Email);
 
-                return RedirectToAction ("Welcome", "Login");
+                return RedirectToAction("Welcome", "Login");
             }
             TempData["errorMessage"] = "Username or Password is incorrect";
 
             return View();
         }
-        
+
+        [Authorize]
+        [HttpPost]
+        public IActionResult ForgetPassword(UserModel data)
+        {
+            var model = _database.LoginDetail.FirstOrDefault(u => u.Email == data.Email);
+            if (data.Password == "") {
+                return View(model);
+            }
+            model.Password = data.Password;
+            _database.LoginDetail.Update(model);
+            _database.SaveChanges();
+            return RedirectToAction("Welcome", "Login");
+
+
+        }
+
+        [Authorize]
+        [HttpPost]
+        public IActionResult Delete(UserModel data) {
+            var model = _database.LoginDetail.FirstOrDefault(u => u.Email == data.Email);
+            if (!ModelState.IsValid)
+            {
+                return NotFound();
+            }
+
+            _database.LoginDetail.Remove(model);
+            _database.SaveChanges();
+
+            return RedirectToAction("Welcome");
+        }
+
     }
 }
 
