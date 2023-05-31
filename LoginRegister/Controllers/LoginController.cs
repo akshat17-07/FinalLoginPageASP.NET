@@ -60,7 +60,8 @@ namespace LoginRegister.Controllers
 
         [Authorize]
         public IActionResult Welcome() {
-            return View();
+            
+            return View(_database.LoginDetail.ToList());
         }
 
         // Post Request
@@ -102,6 +103,7 @@ namespace LoginRegister.Controllers
 
             return View();
         }
+        
     }
 }
 
