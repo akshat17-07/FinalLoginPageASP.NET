@@ -22,13 +22,27 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="login">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="Register">Register</a>
-                        </li>
                     </ul>
+                        @if (User.Identity.IsAuthenticated){
+                            <div class="navbar float-right">
+                                <span>Welcome to </span><span>@User.Identity.Name</span><a class="btn btnsmall btn danger" asp-action="LogOut" asp-controller="Login">LogOut</a>
+
+                            </div>
+
+                        }
+                        else{
+                        <div class="navbar float-right">
+                           
+                        
+                            <a class="nav-link text-dark float-right" asp-area="" asp-controller="Login" asp-action="login">Login</a>
+                        
+                        
+                            <a class="nav-link text-dark float-right" asp-area="" asp-controller="Login" asp-action="Register">Register</a>
+                        
+                        
+                        </div>
+                        }
+                    
                 </div>
             </div>
         </nav>

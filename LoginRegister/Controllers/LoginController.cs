@@ -1,6 +1,10 @@
 ﻿using LoginRegister.Data;
 using LoginRegister.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace LoginRegister.Controllers
 {
@@ -8,42 +12,27 @@ namespace LoginRegister.Controllers
     {
         private readonly UserDbContext _database;
 
-        public int _isactive { get; set; }
-
         public LoginController(UserDbContext database)
         {
             _database = database;
-            _isactive = 0;
-        }
-
-        private void LoginUser() {
-            _isactive = 1;
-        }
-
-        private void LogoutUser() {
-            _isactive = 0;
-        }
-
-        public bool InSession() {
-            if (_isactive != 0)
-            {
-                return true;
-            }
-            else {
-                return false;
-            }
         }
 
         // Get Request
         public IActionResult Index()
         {
-            if (_isactive != 0)
+            if (User.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Welcome", "Login");
             }
             else { 
                 return RedirectToAction("Login", "Login");
             }
+        }
+
+        public IActionResult LogOut() {
+
+            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Login", "Login");
         }
 
         public IActionResult Register()
@@ -56,6 +45,7 @@ namespace LoginRegister.Controllers
             return View();
         }
 
+        [Authorize]
         public IActionResult Welcome() {
             return View();
         }
@@ -85,13 +75,17 @@ namespace LoginRegister.Controllers
 
             if (temp != null && temp.Email == model.Email && temp.Password == model.Password)
             {
-                _isactive = 1;
-                bool t = InSession();
+                var identity = new ClaimsIdentity(new[] {new Claim(
+                    ClaimTypes.Name, model.Email) }, CookieAuthenticationDefaults.AuthenticationScheme);
+                
+                var principal = new ClaimsPrincipal(identity);
 
-                if (t == true) {
-                    return RedirectToAction("Index", "Login"); }
-                return View();
+                HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+                HttpContext.Session.SetString("Username", model.Email);
+
+                return RedirectToAction ("Welcome", "Login");
             }
+            TempData["errorMessage"] = "Username or Password is incorrect";
 
             return View();
         }
