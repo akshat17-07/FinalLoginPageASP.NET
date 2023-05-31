@@ -32,16 +32,28 @@ namespace LoginRegister.Controllers
         public IActionResult LogOut() {
 
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            var storedCookies = Request.Cookies.Keys;
+            foreach (var cookies in storedCookies) {
+                Response.Cookies.Delete(cookies);
+            }
             return RedirectToAction("Login", "Login");
         }
 
         public IActionResult Register()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Welcome", "Login");
+            }
             return View();
         }
 
         public IActionResult Login()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Welcome", "Login");
+            }
             return View();
         }
 
@@ -76,12 +88,12 @@ namespace LoginRegister.Controllers
             if (temp != null && temp.Email == model.Email && temp.Password == model.Password)
             {
                 var identity = new ClaimsIdentity(new[] {new Claim(
-                    ClaimTypes.Name, model.Email) }, CookieAuthenticationDefaults.AuthenticationScheme);
+                    ClaimTypes.Name, temp.FirstName) }, CookieAuthenticationDefaults.AuthenticationScheme);
                 
                 var principal = new ClaimsPrincipal(identity);
 
                 HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-                HttpContext.Session.SetString("Username", model.Email);
+                HttpContext.Session.SetString("Username", temp.Email);
 
                 return RedirectToAction ("Welcome", "Login");
             }

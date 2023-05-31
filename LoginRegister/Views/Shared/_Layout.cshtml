@@ -25,7 +25,7 @@
                     </ul>
                         @if (User.Identity.IsAuthenticated){
                             <div class="navbar float-right">
-                                <span>Welcome to </span><span>@User.Identity.Name</span><a class="btn btnsmall btn danger" asp-action="LogOut" asp-controller="Login">LogOut</a>
+                            <span>Welcome to&nbsp;</span><span class=" = " font-weight-bold p-2">@User.Identity.Name &nbsp;</span><a class="btn btn-sm btn-danger" asp-action="LogOut" asp-controller="Login">LogOut</a>
 
                             </div>
 
