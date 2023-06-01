@@ -1,6 +1,10 @@
 ﻿using LoginRegister.Data;
 using LoginRegister.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,6 +12,7 @@ namespace LoginRegister.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
     public class APIController : ControllerBase
     {
         private readonly UserDbContext _database;
@@ -17,6 +22,7 @@ namespace LoginRegister.Controllers
         }
 
         // GET: api/<APIController>
+        [Authorize]
         [HttpGet]
         [ProducesResponseType(200)]
         public ActionResult<IEnumerable<UserModel>> Get()
@@ -26,6 +32,7 @@ namespace LoginRegister.Controllers
         }
 
         // GET api/<APIController>/5
+        [Authorize]
         [HttpGet("{Email}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
@@ -36,11 +43,12 @@ namespace LoginRegister.Controllers
             {
                 return NotFound();
             }
-            var list = _database.LoginDetail.FirstOrDefault(u=>u.Email==Email);
+            var list = _database.LoginDetail.FirstOrDefault(u => u.Email == Email);
             return Ok(list);
         }
 
         // POST api/<APIController>
+        [Authorize]
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(408)]
@@ -51,8 +59,9 @@ namespace LoginRegister.Controllers
             {
                 return BadRequest();
             }
-            else{ 
-                if (_database.LoginDetail.Find(model.Email)!= null)
+            else
+            {
+                if (_database.LoginDetail.Find(model.Email) != null)
                 {
                     return Conflict();
                 }
@@ -62,19 +71,20 @@ namespace LoginRegister.Controllers
             }
 
 
-            
+
         }
 
         // PUT api/<APIController>/5
         [HttpPut]
+        [Authorize]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(400)]
         public ActionResult Put([FromBody] UserModel value)
         {
             if (!ModelState.IsValid)
-            { 
-                return BadRequest(); 
+            {
+                return BadRequest();
             }
 
             _database.LoginDetail.Update(value);
@@ -84,11 +94,12 @@ namespace LoginRegister.Controllers
 
         // DELETE api/<APIController>/5
         [HttpDelete("{Email}")]
+        [Authorize]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public ActionResult Delete(string Email)
+        public ActionResult Delete(UserModel Email)
         {
-            var user = _database.LoginDetail.Find(Email);
+            var user = _database.LoginDetail.Find(Email.Email);
             if (user == null)
             {
                 return NotFound();
@@ -97,6 +108,44 @@ namespace LoginRegister.Controllers
             _database.SaveChanges();
             return Ok();
 
+        }
+
+        [HttpPost]
+        [Route("login")]
+        public ActionResult Login([FromBody] UserModel model)
+        {
+            UserModel temp = _database.LoginDetail.Find(model.Email);
+
+            if (temp != null && temp.Email == model.Email && temp.Password == model.Password)
+            {
+                var identity = new ClaimsIdentity(new[] {new Claim(
+                    ClaimTypes.Name, temp.FirstName) }, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                var principal = new ClaimsPrincipal(identity);
+
+                HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+                HttpContext.Session.SetString("Username", temp.Email);
+
+                return Ok();
+            }
+
+
+            return BadRequest();
+        }
+
+        [HttpPost]
+        [Route("logout")]
+        [Authorize]
+        public ActionResult LogOut()
+        {
+
+            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            var storedCookies = Request.Cookies.Keys;
+            foreach (var cookies in storedCookies)
+            {
+                Response.Cookies.Delete(cookies);
+            }
+            return Ok();
         }
     }
 }
