@@ -147,8 +147,8 @@ namespace LoginRegister.Controllers
         [HttpPost]
         public IActionResult Delete(UserModel data) {
             var model = _database.LoginDetail.FirstOrDefault(u => u.Email == data.Email);
-            if (!ModelState.IsValid)
-            {
+
+            if (model == null) { 
                 return NotFound();
             }
 
